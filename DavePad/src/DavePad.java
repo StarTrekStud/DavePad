@@ -176,7 +176,6 @@ class DavePad {
 		}
 	}
 	
-	
 	public class csvListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String[] lines;
@@ -188,31 +187,72 @@ class DavePad {
 			lines = text.getText().split("\\n");
 			content = content + "Action,LocatorType,LocatorValue,Data,Assertion" + newline;
 			for (int i = 0; i < lines.length; i++) {
-				elements = lines[i].split("ELEMENT");
-				if (lines[i].equals("Action,LocatorType,LocatorValue,Data,Assertion")) {
+				if (lines[i].indexOf("Action,LocatorType,LocatorValue,Data,Assertion") != -1) {
 					break;
 				}
 				else {
-					if (elements.length == 2) {
-						actions = elements[0].split(" ");
-						steps = elements[1].split("=");
-						if (actions[2].equals("click")) {
-							content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + newline;
+					if (lines[i].indexOf("ELEMENT") != -1) {
+						elements = lines[i].split("ELEMENT");	
+						if (elements.length >= 2) {
+							actions = elements[0].split(" ");
+							//System.out.println(actions[2]);
+							steps = elements[1].split("=");
+							if (actions[2].equals("click")) {
+								content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + newline;
+							}
+							if (actions[2].equals("clickAt")) {
+								content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + newline;
+							}
+							if (actions[2].equals("contextMenuAt")) {
+								content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + newline;
+							}
+							if (actions[2].equals("doubleClick")) {
+								content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + newline;
+							}
+							if (actions[2].equals("waitForElementPresent")) {
+								content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + newline;
+							}
+							if (actions[2].equals("waitForElementNotPresent")) {
+								content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + newline;
+							}
+							if (actions.length >= 4) {
+								if (actions[2].equals("select")) {
+									content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + "," + actions[3].trim() + newline;
+								}
+								if (actions[2].equals("type")) {
+									content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + "," + actions[3].trim() + newline;
+								}
+								if (actions[2].equals("verifyText")) {
+									content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + "," + actions[3].trim() + newline;
+								}
+							}
 						}
-						if (actions[2].equals("select")) {
-							content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + "," + actions[3].trim() + newline;
-						}
-						if (actions[2].equals("type")) {
-							content = content + actions[2].trim() + "," + steps[0].trim() + "," + steps[1].trim() + "," + actions[3].trim() + newline;
+					}	
+					else {
+						if (lines[i].indexOf(" ") != -1) {
+							actions = lines[i].split(" ");
+							if (actions.length >= 3) {
+								//System.out.println(actions[2]);
+								if (actions[2].trim().equals("getAlert")) {
+									content = content + actions[2].trim() + "," + "," + "," + "," + newline;
+								}
+								if (actions[2].trim().equals("getConfirmation")) {
+									content = content + actions[2].trim() + "," + "," + "," + "," + newline;
+								}
+								if (actions.length >= 4) {
+									if (actions[2].equals("pause")) {
+										content = content + actions[2].trim() + "," + "," + "," + actions[3].trim() + newline;
+									}
+								}
+							}
 						}
 					}
+					text.selectAll();
+					text.replaceSelection(content);
 				}
-				text.selectAll();
-				text.replaceSelection(content);
 			}
 		}
 	}
-
 	
 	public class storyListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -222,24 +262,50 @@ class DavePad {
 			String newline = System.getProperty("line.separator");
 			lines = text.getText().split("\\n");
 			for (int i = 0; i < lines.length; i++) {
-				if (lines[0].contains("Narrative:")) {
+				if (lines[0].contains("Narrative: ")) {
 					break;
 				}
 				else {
 					if (i == 0) {
-						content = content + "Narrative:" + newline + "Scenario:" + newline + "Given browser is at" + newline;
+						content = content + "Narrative: " + newline + "Scenario: " + newline + "Given browser is at " + newline;
 					}
 					steps = lines[i].split(",");
-					if (steps.length >= 3) {
-						if (steps[0].equals("click")) {
-							content = content + "When I " + steps[0] + " ELEMENT " + steps[1] + " = " + steps [2] + newline;
-						}
-						if (steps[0].equals("select")) {
-							content = content + "When I " + steps[0] + " " + steps[3] + " in ELEMENT " + steps[1] + " = " + steps [2] + newline;
-						}
-						if (steps[0].equals("type")) {
-							content = content + "When I " + steps[0] + " " + steps[3] + " in ELEMENT " + steps[1] + " = " + steps [2] + newline;
-						}
+					//System.out.println(steps[0]);
+					if (steps[0].equals("click")) {
+						content = content + "When I " + steps[0] + " ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("clickAt")) {
+						content = content + "When I " + steps[0] + " ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("contextMenuAt")) {
+						content = content + "When I " + steps[0] + " ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("doubleClick")) {
+						content = content + "When I " + steps[0] + " ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("pause")) {
+						content = content + "When I " + steps[0] + " " + steps[3] + " milliseconds" + newline;
+					}
+					if (steps[0].equals("select")) {
+						content = content + "When I " + steps[0] + " " + steps[3] + " in ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("type")) {
+						content = content + "When I " + steps[0] + " " + steps[3] + " in ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("verifyText")) {
+						content = content + "When I " + steps[0] + " " + steps[3] + " in ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("waitForElementPresent")) {
+						content = content + "When I " + steps[0] + " ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("waitForElementNotPresent")) {
+						content = content + "When I " + steps[0] + " ELEMENT " + steps[1] + " = " + steps [2] + newline;
+					}
+					if (steps[0].equals("getAlert")) {
+						content = content + "When I " + steps[0] + newline;
+					}
+					if (steps[0].equals("getConfirmation")) {
+						content = content + "When I " + steps[0] + newline;
 					}
 					if (i + 1 == lines.length) {
 						content = content + "Then the browser should close";
